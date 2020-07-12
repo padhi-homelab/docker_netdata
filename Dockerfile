@@ -1,4 +1,4 @@
-FROM padhihomelab/netdata:builder AS builder
+FROM builder AS builder
 
 
 ARG NETDATA_VERSION=v1.23.1
@@ -8,7 +8,7 @@ ARG NETDATA_SOURCE_TAR=https://github.com/netdata/netdata/archive/${NETDATA_VERS
 ADD ${NETDATA_SOURCE_TAR} /tmp/netdata.tar.gz
 
 
-RUN tar -C /opt -zxf /tmp/netdata.tar.gz
+RUN tar -C /opt -zxf /tmp/netdata.tar.gz \
  && mv /opt/netdata* /opt/netdata.git
 
 
@@ -45,7 +45,7 @@ RUN chmod +x netdata-installer.sh \
  && chmod +x /app/usr/sbin/run.sh
 
 
-FROM padhihomelab/netdata:runtime AS runtime
+FROM runtime AS runtime
 
 
 COPY --from=builder /app /
@@ -79,7 +79,6 @@ RUN mv /usr/sbin/fping /usr/local/bin/fping \
  && chmod 0755 /usr/libexec/netdata/plugins.d/*.plugin \
  && chmod 4755 /usr/libexec/netdata/plugins.d/cgroup-network \
                /usr/libexec/netdata/plugins.d/apps.plugin \
-               /usr/libexec/netdata/plugins.d/freeipmi.plugin \
  && find /var/lib/netdata /var/cache/netdata -type d -exec chmod 0770 {} \; \
  && find /var/lib/netdata /var/cache/netdata -type f -exec chmod 0660 {} \; \
  && ln -sf /dev/stdout /var/log/netdata/access.log \

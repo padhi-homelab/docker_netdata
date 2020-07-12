@@ -31,6 +31,8 @@ RUN apk add --no-cache \
         nodejs \
         openssl-dev \
         pkgconfig \
+        protobuf-dev \
+        snappy-dev \
         util-linux-dev \
         zlib-dev \
  && pip install \

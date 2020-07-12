@@ -27,12 +27,12 @@ RUN apk add --no-cache \
         util-linux \
         zlib \
  && pip install \
-        pymongo[snappy,zstd] \
+        pymongo[snappy] \
         pyyaml \
  && apk del --purge \
         g++ \
-&& rm -rf /tmp/* \
-          /var/cache/apk/*
+ && rm -rf /tmp/* \
+           /var/cache/apk/*
 
 
 CMD ["bash"]

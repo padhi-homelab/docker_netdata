@@ -1,5 +1,5 @@
-FROM python:3.7-alpine
-
+FROM python:3.8-alpine
+ARG TARGETARCH
 
 LABEL maintainer="Saswat Padhi saswat.sourav@gmail.com"
 
@@ -34,13 +34,15 @@ RUN apk add --no-cache \
         util-linux-dev \
         zlib-dev \
  && pip install \
-        psycopg2 \
         pyyaml \
  && cd / \
  && tar -zxf /judy.tar.gz \
  && rm judy.tar.gz \
  && cd /judy-${JUDY_VERSION} \
- && CFLAGS="-O2 -s" CXXFLAGS="-O2 -s" ./configure --prefix=/deps \
+ && CFLAGS="-O2 -s" CXXFLAGS="-O2 -s" \
+    ./configure --prefix=/deps \
+                $([ "${TARGETARCH}" == "arm64" ] && echo " --build=aarch64-unknown-linux-gnu") \
+                $([ "${TARGETARCH}" == "ppc64le" ] && echo " --build=powerpc64le-unknown-linux-gnu") \
  && make \
  && make install
 

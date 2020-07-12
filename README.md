@@ -26,9 +26,15 @@ A multiarch [netdata] Docker image, based on [Alpine Linux].
     images are based on the [builder](https://github.com/netdata/helper-images/blob/master/builder/Dockerfile)
     and [base](https://github.com/netdata/helper-images/blob/master/base/Dockerfile) images in this repo.
   - I removed `freeipmi` since I do not need it.
-  - I removed the (now dead) `py-mysqldb` apk package.
+  - I removed [MySQL] and [PostgreSQL] from runtime,
+    but added support for [MongoDB] + [protobuf] + [snappy].
 
 
 
 [Alpine Linux]: https://alpinelinux.org/
+[MongoDB]:      https://www.mongodb.com/
+[MySQL]:        https://www.mysql.com/
 [netdata]:      https://www.netdata.cloud/
+[PostgreSQL]:   https://www.postgresql.org/
+[protobuf]:     https://github.com/protocolbuffers/protobuf/
+[snappy]:       https://github.com/google/snappy/

@@ -1,4 +1,4 @@
-FROM python:3.7-alpine
+FROM python:3.8-alpine
 
 
 LABEL maintainer="Saswat Padhi saswat.sourav@gmail.com"
@@ -7,10 +7,12 @@ LABEL maintainer="Saswat Padhi saswat.sourav@gmail.com"
 RUN apk add --no-cache \
         curl \
         fping \
+        g++ \
         jq \
         json-c \
         libmnl \
         libgcrypt \
+        libprotobuf \
         libuuid \
         libuv \
         libvirt-daemon \
@@ -21,12 +23,16 @@ RUN apk add --no-cache \
         nodejs \
         openssl \
         shadow \
+        snappy-dev \
         util-linux \
         zlib \
  && pip install \
-        psycopg2 \
-        pymongo \
-        pyyaml
+        pymongo[snappy,zstd] \
+        pyyaml \
+ && apk del --purge \
+        g++ \
+&& rm -rf /tmp/* \
+          /var/cache/apk/*
 
 
 CMD ["bash"]

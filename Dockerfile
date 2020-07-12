@@ -1,4 +1,4 @@
-FROM builder AS builder
+FROM padhihomelab/netdata:builder AS builder
 
 
 ARG NETDATA_VERSION=v1.23.1
@@ -45,7 +45,7 @@ RUN chmod +x netdata-installer.sh \
  && chmod +x /app/usr/sbin/run.sh
 
 
-FROM runtime AS runtime
+FROM padhihomelab/netdata:runtime AS runtime
 
 
 COPY --from=builder /app /

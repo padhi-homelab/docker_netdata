@@ -9,7 +9,25 @@ on:
       - v*
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      builder: ${{ steps.filter.outputs.builder }}
+      runtime: ${{ steps.filter.outputs.runtime }}
+    steps:
+    - uses: actions/checkout@v2
+    - uses: dorny/paths-filter@v2.2.0
+      id: filter
+      with:
+        filters: |
+          builder:
+            - builder.Dockerfile
+          runtime:
+            - runtime.Dockerfile
+
   build__builder:
+    needs: [changes]
+    if: ${{ needs.changes.outputs.builder == 'true' }}
     runs-on: ubuntu-latest
     steps:
       -
@@ -77,6 +95,8 @@ jobs:
         run: |
           rm -f ${HOME}/.docker/config.json
   build__runtime:
+    needs: [changes]
+    if: ${{ needs.changes.outputs.runtime == 'true' }}
     runs-on: ubuntu-latest
     steps:
       -
@@ -145,6 +165,7 @@ jobs:
           rm -f ${HOME}/.docker/config.json
   build:
     needs: [build__builder, build__runtime]
+    if: always()
     runs-on: ubuntu-latest
     steps:
       -

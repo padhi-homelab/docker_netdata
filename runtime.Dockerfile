@@ -1,8 +1,6 @@
 FROM python:3.8-alpine
 
-
 LABEL maintainer="Saswat Padhi saswat.sourav@gmail.com"
-
 
 RUN apk add --no-cache \
         curl \
@@ -19,6 +17,7 @@ RUN apk add --no-cache \
         lm_sensors \
         lz4 \
         lz4-libs \
+        mongo-c-driver \
         netcat-openbsd \
         nodejs \
         openssl \
@@ -27,12 +26,12 @@ RUN apk add --no-cache \
         util-linux \
         zlib \
  && pip install \
+        dnspython \
         pymongo[snappy] \
         pyyaml \
  && apk del --purge \
         g++ \
  && rm -rf /tmp/* \
            /var/cache/apk/*
-
 
 CMD ["bash"]

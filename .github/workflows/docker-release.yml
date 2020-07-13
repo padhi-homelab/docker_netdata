@@ -25,7 +25,7 @@ jobs:
           runtime:
             - runtime.Dockerfile
 
-  build__builder:
+  build--builder:
     needs: [changes]
     if: ${{ needs.changes.outputs.builder == 'true' }}
     runs-on: ubuntu-latest
@@ -94,7 +94,7 @@ jobs:
         if: always()
         run: |
           rm -f ${HOME}/.docker/config.json
-  build__runtime:
+  build--runtime:
     needs: [changes]
     if: ${{ needs.changes.outputs.runtime == 'true' }}
     runs-on: ubuntu-latest
@@ -163,8 +163,9 @@ jobs:
         if: always()
         run: |
           rm -f ${HOME}/.docker/config.json
+
   build:
-    needs: [build__builder, build__runtime]
+    needs: [build--builder, build--runtime]
     if: always()
     runs-on: ubuntu-latest
     steps:

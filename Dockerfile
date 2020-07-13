@@ -1,21 +1,14 @@
 FROM padhihomelab/netdata:builder AS builder
 
-
 ARG NETDATA_VERSION=v1.23.1
-
 
 ARG NETDATA_SOURCE_TAR=https://github.com/netdata/netdata/archive/${NETDATA_VERSION}.tar.gz
 ADD ${NETDATA_SOURCE_TAR} /tmp/netdata.tar.gz
 
-
 RUN tar -C /opt -zxf /tmp/netdata.tar.gz \
- && mv /opt/netdata* /opt/netdata.git
-
-
-WORKDIR /opt/netdata.git
-
-
-RUN chmod +x netdata-installer.sh \
+ && mv /opt/netdata* /opt/netdata.git \
+ && cd /opt/netdata.git \
+ && chmod +x netdata-installer.sh \
  && cp -rp /deps/* /usr/local/ \
  && ./netdata-installer.sh --disable-cloud \
                            --disable-telemetry \
@@ -47,17 +40,15 @@ RUN chmod +x netdata-installer.sh \
 
 FROM padhihomelab/netdata:runtime AS runtime
 
-
 COPY --from=builder /app /
 COPY --from=builder /opt/netdata.git/packaging/docker/health.sh /health.sh
 
-
 ARG NETDATA_UID=201
 ARG NETDATA_GID=201
-ENV DOCKER_GRP netdata
-ENV DOCKER_USR netdata
-ENV DO_NOT_TRACK=1
 
+ENV DOCKER_GRP=netdata \
+    DOCKER_USR=netdata \
+    DO_NOT_TRACK=1
 
 RUN mv /usr/sbin/fping /usr/local/bin/fping \
  && chmod 4755 /usr/local/bin/fping \
@@ -85,11 +76,9 @@ RUN mv /usr/sbin/fping /usr/local/bin/fping \
  && ln -sf /dev/stdout /var/log/netdata/debug.log \
  && ln -sf /dev/stderr /var/log/netdata/error.log
 
-
 EXPOSE 19999
-
 
 ENTRYPOINT ["/usr/sbin/run.sh"]
 
-
-HEALTHCHECK --interval=60s --timeout=10s --retries=3 CMD /health.sh
+HEALTHCHECK --interval=60s --timeout=10s --retries=3 \
+        CMD /health.sh

@@ -3,13 +3,10 @@ ARG TARGETARCH
 
 LABEL maintainer="Saswat Padhi saswat.sourav@gmail.com"
 
-
 ARG JUDY_VERSION=1.0.5
-
 
 ARG JUDY_SOURCE_TAR=http://downloads.sourceforge.net/project/judy/judy/Judy-${JUDY_VERSION}/Judy-${JUDY_VERSION}.tar.gz
 ADD ${JUDY_SOURCE_TAR} /judy.tar.gz
-
 
 RUN apk add --no-cache \
         alpine-sdk \
@@ -47,6 +44,5 @@ RUN apk add --no-cache \
                 $([ "${TARGETARCH}" == "ppc64le" ] && echo " --build=powerpc64le-unknown-linux-gnu") \
  && make \
  && make install
-
 
 CMD ["bash"]

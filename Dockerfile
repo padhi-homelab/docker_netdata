@@ -38,7 +38,7 @@ RUN tar -C /opt -zxf /tmp/netdata.tar.gz \
  && chmod +x /app/usr/sbin/run.sh
 
 
-FROM padhihomelab/netdata:runtime AS runtime
+FROM padhihomelab/netdata:runtime
 
 COPY --from=builder /app /
 COPY --from=builder /opt/netdata.git/packaging/docker/health.sh /health.sh

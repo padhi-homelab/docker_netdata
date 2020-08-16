@@ -16,6 +16,7 @@ RUN apk add --no-cache \
         build-base \
         cmake \
         curl \
+        elfutils-dev \
         jq \
         json-c-dev \
         libgcrypt-dev \

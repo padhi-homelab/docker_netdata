@@ -4,6 +4,7 @@ LABEL maintainer="Saswat Padhi saswat.sourav@gmail.com"
 
 RUN apk add --no-cache \
         curl \
+        elfutils-dev \
         fping \
         g++ \
         jq \
@@ -20,6 +21,7 @@ RUN apk add --no-cache \
         mongo-c-driver \
         netcat-openbsd \
         nodejs \
+        openrc \
         openssl \
         shadow \
         snappy-dev \

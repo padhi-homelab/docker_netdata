@@ -67,6 +67,18 @@ jobs:
         run: |
           docker buildx build --output "type=image,push=false" ${{ steps.prepare.outputs.buildx_args }}
       -
+        name: "Anchore Scan: Run"
+        uses: anchore/scan-action@v2
+        with:
+          image: "${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }}"
+          acs-report-enable: true
+          fail-build: true
+      -
+        name: "Anchore Scan: Report"
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: results.sarif
+      -
         name: "Docker Hub: Login"
         if: success() && github.event_name != 'pull_request'
         run: |
@@ -135,6 +147,18 @@ jobs:
         name: "Docker: Buildx build"
         run: |
           docker buildx build --output "type=image,push=false" ${{ steps.prepare.outputs.buildx_args }}
+      -
+        name: "Anchore Scan: Run"
+        uses: anchore/scan-action@v2
+        with:
+          image: "${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }}"
+          acs-report-enable: true
+          fail-build: true
+      -
+        name: "Anchore Scan: Report"
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: results.sarif
       -
         name: "Docker Hub: Login"
         if: success() && github.event_name != 'pull_request'
@@ -212,6 +236,18 @@ jobs:
         name: "Docker: Buildx build"
         run: |
           docker buildx build --output "type=image,push=false" ${{ steps.prepare.outputs.buildx_args }}
+      -
+        name: "Anchore Scan: Run"
+        uses: anchore/scan-action@v2
+        with:
+          image: "${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }}"
+          acs-report-enable: true
+          fail-build: true
+      -
+        name: "Anchore Scan: Report"
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: results.sarif
       -
         name: "Docker Hub: Login"
         if: success() && github.event_name != 'pull_request'

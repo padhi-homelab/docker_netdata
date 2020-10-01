@@ -78,6 +78,7 @@ RUN mv /usr/sbin/fping /usr/local/bin/fping \
 
 EXPOSE 19999
 
+USER ${DOCKER_USR}
 ENTRYPOINT ["/usr/sbin/run.sh"]
 
 HEALTHCHECK --interval=60s --timeout=10s --retries=3 \

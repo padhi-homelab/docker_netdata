@@ -77,8 +77,7 @@ RUN mv /usr/sbin/fping /usr/local/bin/fping \
  && find /var/lib/netdata /var/cache/netdata -type f -exec chmod 0660 {} \; \
  && ln -sf /dev/stdout /var/log/netdata/access.log \
  && ln -sf /dev/stdout /var/log/netdata/debug.log \
- && ln -sf /dev/stderr /var/log/netdata/error.log \
- && pip install /wheels/*
+ && ln -sf /dev/stderr /var/log/netdata/error.log
 
 EXPOSE $NETDATA_LISTENER_PORT
 

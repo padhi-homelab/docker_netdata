@@ -1,6 +1,6 @@
 FROM padhihomelab/netdata:builder AS builder
 
-ARG NETDATA_VERSION=v1.25.0
+ARG NETDATA_VERSION=v1.26.0
 
 ARG NETDATA_SOURCE_TAR=https://github.com/netdata/netdata/archive/${NETDATA_VERSION}.tar.gz
 ADD ${NETDATA_SOURCE_TAR} /tmp/netdata.tar.gz
@@ -40,6 +40,8 @@ RUN tar -C /opt -zxf /tmp/netdata.tar.gz \
 
 FROM padhihomelab/netdata:runtime
 
+LABEL maintainer="Saswat Padhi saswat.sourav@gmail.com"
+
 COPY --from=builder /app /
 COPY --from=builder /opt/netdata.git/packaging/docker/health.sh /health.sh
 
@@ -48,7 +50,8 @@ ARG NETDATA_GID=201
 
 ENV DOCKER_GRP=netdata \
     DOCKER_USR=netdata \
-    DO_NOT_TRACK=1
+    DO_NOT_TRACK=1 \
+    NETDATA_LISTENER_PORT=19999
 
 RUN mv /usr/sbin/fping /usr/local/bin/fping \
  && chmod 4755 /usr/local/bin/fping \
@@ -74,11 +77,11 @@ RUN mv /usr/sbin/fping /usr/local/bin/fping \
  && find /var/lib/netdata /var/cache/netdata -type f -exec chmod 0660 {} \; \
  && ln -sf /dev/stdout /var/log/netdata/access.log \
  && ln -sf /dev/stdout /var/log/netdata/debug.log \
- && ln -sf /dev/stderr /var/log/netdata/error.log
+ && ln -sf /dev/stderr /var/log/netdata/error.log \
+ && pip install /wheels/*
 
-EXPOSE 19999
+EXPOSE $NETDATA_LISTENER_PORT
 
-USER ${DOCKER_USR}
 ENTRYPOINT ["/usr/sbin/run.sh"]
 
 HEALTHCHECK --interval=60s --timeout=10s --retries=3 \

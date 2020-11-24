@@ -2,7 +2,7 @@ FROM python:3.8-alpine3.12
 
 LABEL maintainer="Saswat Padhi saswat.sourav@gmail.com"
 
-RUN apk add --no-cache \
+RUN apk add --no-cache --update \
         curl \
         elfutils-dev \
         fping \
@@ -33,7 +33,6 @@ RUN apk add --no-cache \
         pyyaml \
  && apk del --purge \
         g++ \
- && rm -rf /tmp/* \
-           /var/cache/apk/*
+ && rm -rf /tmp/*
 
 CMD ["bash"]

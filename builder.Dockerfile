@@ -1,4 +1,4 @@
-FROM python:3.8-alpine3.12
+FROM python:3.9-alpine3.12
 ARG TARGETARCH
 
 LABEL maintainer="Saswat Padhi saswat.sourav@gmail.com"
@@ -33,7 +33,8 @@ RUN apk add --no-cache --update \
         snappy-dev \
         util-linux-dev \
         zlib-dev \
- && pip install \
+ && pip install --upgrade \
+        pip \
         pyyaml \
  && cd / \
  && tar -zxf /judy.tar.gz \

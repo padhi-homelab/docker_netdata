@@ -1,4 +1,4 @@
-FROM python:3.8-alpine3.12
+FROM python:3.9-alpine3.12
 
 LABEL maintainer="Saswat Padhi saswat.sourav@gmail.com"
 
@@ -27,8 +27,9 @@ RUN apk add --no-cache --update \
         snappy-dev \
         util-linux \
         zlib \
- && pip install \
+ && pip install --upgrade \
         dnspython \
+        pip \
         pymongo[snappy] \
         pyyaml \
  && apk del --purge \

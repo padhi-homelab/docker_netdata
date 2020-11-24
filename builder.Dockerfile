@@ -8,7 +8,7 @@ ARG JUDY_VERSION=1.0.5
 ARG JUDY_SOURCE_TAR=http://downloads.sourceforge.net/project/judy/judy/Judy-${JUDY_VERSION}/Judy-${JUDY_VERSION}.tar.gz
 ADD ${JUDY_SOURCE_TAR} /judy.tar.gz
 
-RUN apk add --no-cache \
+RUN apk add --no-cache --update \
         alpine-sdk \
         autoconf \
         automake \

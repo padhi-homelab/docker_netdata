@@ -1,4 +1,4 @@
-FROM python:3.8-alpine3.12
+FROM python:3.9.0-alpine3.12
 
 LABEL maintainer="Saswat Padhi saswat.sourav@gmail.com"
 

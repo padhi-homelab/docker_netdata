@@ -1,6 +1,6 @@
 FROM padhihomelab/netdata:builder AS builder
 
-ARG NETDATA_VERSION=v1.26.0
+ARG NETDATA_VERSION=v1.27.0
 
 ARG NETDATA_SOURCE_TAR=https://github.com/netdata/netdata/archive/${NETDATA_VERSION}.tar.gz
 ADD ${NETDATA_SOURCE_TAR} /tmp/netdata.tar.gz
@@ -34,6 +34,7 @@ RUN tar -C /opt -zxf /tmp/netdata.tar.gz \
  && mv /usr/sbin/netdata-claim.sh /app/usr/sbin/ \
  && mv /usr/sbin/netdatacli       /app/usr/sbin/ \
  && mv packaging/docker/run.sh    /app/usr/sbin/ \
+ && mv packaging/docker/health.sh /app/usr/sbin/ \
  && cp -rp /deps/* /app/usr/local/ \
  && chmod +x /app/usr/sbin/run.sh
 
@@ -43,7 +44,6 @@ FROM padhihomelab/netdata:runtime
 LABEL maintainer="Saswat Padhi saswat.sourav@gmail.com"
 
 COPY --from=builder /app /
-COPY --from=builder /opt/netdata.git/packaging/docker/health.sh /health.sh
 
 ARG NETDATA_UID=201
 ARG NETDATA_GID=201
@@ -53,7 +53,11 @@ ENV DOCKER_GRP=netdata \
     DO_NOT_TRACK=1 \
     NETDATA_LISTENER_PORT=19999
 
-RUN mv /usr/sbin/fping /usr/local/bin/fping \
+RUN mkdir -p /opt/src /var/log/netdata \
+ && ln -sf /dev/stdout /var/log/netdata/access.log \
+ && ln -sf /dev/stdout /var/log/netdata/debug.log \
+ && ln -sf /dev/stderr /var/log/netdata/error.log \
+ && mv /usr/sbin/fping /usr/local/bin/fping \
  && chmod 4755 /usr/local/bin/fping \
  && mkdir -p /var/log/netdata \
  && addgroup -g ${NETDATA_GID} -S "${DOCKER_GRP}" \
@@ -74,14 +78,11 @@ RUN mv /usr/sbin/fping /usr/local/bin/fping \
  && chmod 4755 /usr/libexec/netdata/plugins.d/cgroup-network \
                /usr/libexec/netdata/plugins.d/apps.plugin \
  && find /var/lib/netdata /var/cache/netdata -type d -exec chmod 0770 {} \; \
- && find /var/lib/netdata /var/cache/netdata -type f -exec chmod 0660 {} \; \
- && ln -sf /dev/stdout /var/log/netdata/access.log \
- && ln -sf /dev/stdout /var/log/netdata/debug.log \
- && ln -sf /dev/stderr /var/log/netdata/error.log
+ && find /var/lib/netdata /var/cache/netdata -type f -exec chmod 0660 {} \;
 
 EXPOSE $NETDATA_LISTENER_PORT
 
 ENTRYPOINT ["/usr/sbin/run.sh"]
 
 HEALTHCHECK --interval=60s --timeout=10s --retries=3 \
-        CMD /health.sh
+        CMD /usr/sbin/health.sh

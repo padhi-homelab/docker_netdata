@@ -1,6 +1,6 @@
 FROM padhihomelab/netdata:builder AS builder
 
-ARG NETDATA_VERSION=v1.27.0
+ARG NETDATA_VERSION=v1.28.0
 
 ARG NETDATA_SOURCE_TAR=https://github.com/netdata/netdata/archive/${NETDATA_VERSION}.tar.gz
 ADD ${NETDATA_SOURCE_TAR} /tmp/netdata.tar.gz

@@ -1,4 +1,4 @@
-FROM python:3.9-alpine3.13
+FROM python:3.9-alpine3.12
 ARG TARGETARCH
 
 LABEL maintainer="Saswat Padhi saswat.sourav@gmail.com"

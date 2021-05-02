@@ -1,6 +1,6 @@
 FROM padhihomelab/netdata:builder AS builder
 
-ARG NETDATA_VERSION=v1.29.3
+ARG NETDATA_VERSION=v1.30.1
 
 ARG NETDATA_SOURCE_TAR=https://github.com/netdata/netdata/archive/${NETDATA_VERSION}.tar.gz
 ADD ${NETDATA_SOURCE_TAR} /tmp/netdata.tar.gz
@@ -57,9 +57,8 @@ RUN mkdir -p /opt/src /var/log/netdata \
  && ln -sf /dev/stdout /var/log/netdata/access.log \
  && ln -sf /dev/stdout /var/log/netdata/debug.log \
  && ln -sf /dev/stderr /var/log/netdata/error.log \
- && mv /usr/sbin/fping /usr/local/bin/fping \
+ && ln -snf /usr/sbin/fping /usr/local/bin/fping \
  && chmod 4755 /usr/local/bin/fping \
- && mkdir -p /var/log/netdata \
  && addgroup -g ${NETDATA_GID} -S "${DOCKER_GRP}" \
  && adduser -S -H -s /usr/sbin/nologin -u ${NETDATA_GID} -h /etc/netdata -G "${DOCKER_GRP}" "${DOCKER_USR}" \
  && chown -R root:root \

@@ -7,6 +7,7 @@ RUN apk add --no-cache --update \
         elfutils-dev \
         fping \
         g++ \
+        iproute2 \
         jq \
         json-c \
         libmnl \
@@ -19,6 +20,7 @@ RUN apk add --no-cache --update \
         lz4 \
         lz4-libs \
         mongo-c-driver \
+        msmtp \
         netcat-openbsd \
         nodejs \
         openrc \

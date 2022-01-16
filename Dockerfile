@@ -1,6 +1,6 @@
 FROM padhihomelab/netdata:builder AS builder
 
-ARG NETDATA_VERSION=v1.31.0
+ARG NETDATA_VERSION=v1.32.1
 
 ARG NETDATA_SOURCE_TAR=https://github.com/netdata/netdata/archive/${NETDATA_VERSION}.tar.gz
 ADD ${NETDATA_SOURCE_TAR} /tmp/netdata.tar.gz
@@ -9,13 +9,13 @@ RUN tar -C /opt -zxf /tmp/netdata.tar.gz \
  && mv /opt/netdata* /opt/netdata.git \
  && cd /opt/netdata.git \
  && chmod +x netdata-installer.sh \
- && cp -rp /deps/* /usr/local/ \
  && ./netdata-installer.sh --disable-cloud \
                            --disable-telemetry \
                            --dont-start-it \
                            --dont-wait \
                            --enable-backend-prometheus-remote-write \
                            --stable-channel \
+                           --use-system-protobuf \
  && mkdir -p /app/usr/sbin/ \
              /app/usr/share \
              /app/usr/libexec \
@@ -35,7 +35,6 @@ RUN tar -C /opt -zxf /tmp/netdata.tar.gz \
  && mv /usr/sbin/netdatacli       /app/usr/sbin/ \
  && mv packaging/docker/run.sh    /app/usr/sbin/ \
  && mv packaging/docker/health.sh /app/usr/sbin/ \
- && cp -rp /deps/* /app/usr/local/ \
  && chmod +x /app/usr/sbin/run.sh
 
 

@@ -1,86 +1,31 @@
-FROM padhihomelab/netdata:builder AS builder
-
-ARG NETDATA_VERSION=v1.32.1
-
-ARG NETDATA_SOURCE_TAR=https://github.com/netdata/netdata/archive/${NETDATA_VERSION}.tar.gz
-ADD ${NETDATA_SOURCE_TAR} /tmp/netdata.tar.gz
-
-RUN tar -C /opt -zxf /tmp/netdata.tar.gz \
- && mv /opt/netdata* /opt/netdata.git \
- && cd /opt/netdata.git \
- && chmod +x netdata-installer.sh \
- && ./netdata-installer.sh --disable-cloud \
-                           --disable-telemetry \
-                           --dont-start-it \
-                           --dont-wait \
-                           --enable-backend-prometheus-remote-write \
-                           --stable-channel \
-                           --use-system-protobuf \
- && mkdir -p /app/usr/sbin/ \
-             /app/usr/share \
-             /app/usr/libexec \
-             /app/usr/local \
-             /app/usr/lib \
-             /app/var/cache \
-             /app/var/lib \
-             /app/etc \
- && mv /usr/share/netdata         /app/usr/share/ \
- && mv /usr/libexec/netdata       /app/usr/libexec/ \
- && mv /usr/lib/netdata           /app/usr/lib/ \
- && mv /var/cache/netdata         /app/var/cache/ \
- && mv /var/lib/netdata           /app/var/lib/ \
- && mv /etc/netdata               /app/etc/ \
- && mv /usr/sbin/netdata          /app/usr/sbin/ \
- && mv /usr/sbin/netdata-claim.sh /app/usr/sbin/ \
- && mv /usr/sbin/netdatacli       /app/usr/sbin/ \
- && mv packaging/docker/run.sh    /app/usr/sbin/ \
- && mv packaging/docker/health.sh /app/usr/sbin/ \
- && chmod +x /app/usr/sbin/run.sh
-
-
-FROM padhihomelab/netdata:runtime
+FROM padhihomelab/alpine-base:edge
 
 LABEL maintainer="Saswat Padhi saswat.sourav@gmail.com"
 
-COPY --from=builder /app /
+COPY entrypoint-scripts \
+     /etc/docker-entrypoint.d/99-extra-scripts
 
-ARG NETDATA_UID=201
-ARG NETDATA_GID=201
+ENV DO_NOT_TRACK=1 \
+    ENTRYPOINT_RUN_AS_ROOT=1
 
-ENV DOCKER_GRP=netdata \
-    DOCKER_USR=netdata \
-    DO_NOT_TRACK=1 \
-    NETDATA_LISTENER_PORT=19999
+RUN chmod +x /etc/docker-entrypoint.d/99-extra-scripts/*.sh \
+ # curl and jq are required by cgroup-name.sh plugin
+ && apk add --update --no-cache \
+            curl \
+            jq \
+            netdata=1.33.0-r0 \
+ # Opt out of telemetry
+ && touch /etc/netdata/.opt-out-from-anonymous-statistics \
+ # The server only binds to localhost by default on Alpine
+ && sed -i 's;^\s*bind to = .*$;;g' /etc/netdata/netdata.conf \
+ # Disable Netdata cloud entirely
+ && mkdir -p /var/lib/netdata/cloud.d \
+ && echo -e "[global]\n  enabled = no" > /var/lib/netdata/cloud.d/cloud.conf
 
-RUN mkdir -p /opt/src /var/log/netdata \
- && ln -sf /dev/stdout /var/log/netdata/access.log \
- && ln -sf /dev/stdout /var/log/netdata/debug.log \
- && ln -sf /dev/stderr /var/log/netdata/error.log \
- && ln -snf /usr/sbin/fping /usr/local/bin/fping \
- && chmod 4755 /usr/local/bin/fping \
- && addgroup -g ${NETDATA_GID} -S "${DOCKER_GRP}" \
- && adduser -S -H -s /usr/sbin/nologin -u ${NETDATA_GID} -h /etc/netdata -G "${DOCKER_GRP}" "${DOCKER_USR}" \
- && chown -R root:root \
-          /etc/netdata \
-          /usr/share/netdata \
-          /usr/libexec/netdata \
- && chown -R netdata:root \
-          /usr/lib/netdata \
-          /var/cache/netdata \
-          /var/lib/netdata \
-          /var/log/netdata \
- && chown -R netdata:netdata \
-          /var/lib/netdata/cloud.d \
- && chmod 0700 /var/lib/netdata/cloud.d \
- && chmod 0755 /usr/libexec/netdata/plugins.d/*.plugin \
- && chmod 4755 /usr/libexec/netdata/plugins.d/cgroup-network \
-               /usr/libexec/netdata/plugins.d/apps.plugin \
- && find /var/lib/netdata /var/cache/netdata -type d -exec chmod 0770 {} \; \
- && find /var/lib/netdata /var/cache/netdata -type f -exec chmod 0660 {} \;
+EXPOSE 1234
 
-EXPOSE $NETDATA_LISTENER_PORT
+# Runs as `netdata` user created during installation.
+CMD ["netdata", "-D", "-p", "1234", "-s", "/host"]
 
-ENTRYPOINT ["/usr/sbin/run.sh"]
-
-HEALTHCHECK --interval=60s --timeout=10s --retries=3 \
-        CMD /usr/sbin/health.sh
+HEALTHCHECK --interval=15s --timeout=3s --retries=3 \
+        CMD [ "wget", "-qSO", "/dev/null", "http://localhost:1234" ]

@@ -18,16 +18,9 @@ docker run --rm --detach \
            -it padhihomelab/netdata
 ```
 
-Runs `netdata` on port 1234.
+Serves `netdata` on port 1234.
 
 _<More details to be added soon>_
-
-
----
-
-### Inspired by
-- <https://github.com/netdata/netdata>
-- <https://github.com/netdata/helper-images>
 
 
 

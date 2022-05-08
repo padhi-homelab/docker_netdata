@@ -13,7 +13,7 @@ RUN chmod +x /etc/docker-entrypoint.d/99-extra-scripts/*.sh \
  && apk add --update --no-cache \
             curl \
             jq \
-            netdata=1.33.1-r0 \
+            netdata=1.34.1-r0 \
  # Opt out of telemetry
  && touch /etc/netdata/.opt-out-from-anonymous-statistics \
  # The server only binds to localhost by default on Alpine

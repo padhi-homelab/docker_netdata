@@ -14,7 +14,7 @@ RUN chmod +x /etc/docker-entrypoint.d/99-extra-scripts/*.sh \
             curl \
             jq \
             libc6-compat \
-            netdata=1.35.1-r0 \
+            netdata=1.36.0-r0 \
  # Opt out of telemetry
  && touch /etc/netdata/.opt-out-from-anonymous-statistics \
  # The server only binds to localhost by default on Alpine
@@ -28,5 +28,5 @@ EXPOSE 1234
 # Runs as `netdata` user created during installation.
 CMD ["netdata", "-D", "-p", "1234", "-s", "/host"]
 
-HEALTHCHECK --interval=15s --timeout=3s --retries=3 \
-        CMD [ "wget", "-qSO", "/dev/null", "http://localhost:1234" ]
+HEALTHCHECK --interval=15s --timeout=3s \
+        CMD [ "wget", "-qSO", "/dev/null", "http://127.0.0.1:1234" ]
